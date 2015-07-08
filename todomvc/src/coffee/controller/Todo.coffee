@@ -1,10 +1,17 @@
 App.Controller.Todo = App.Controller.extend(
   initialize: ->
     @todos = new App.Collection.Todos()
+
     @todoList = new App.View.Todos(
-      el: '#todo-list'
+      el: '#todo-list',
+      collection: @todos
     )
 
-    @todoList.add('test1')
-    @todoList.add('test2')
+    @form = new App.View.Form(
+      el: '#new-todo-form',
+      collection: @todos
+    )
+
+    # @todos.add('test1')
+    # @todos.add('test2')
 )

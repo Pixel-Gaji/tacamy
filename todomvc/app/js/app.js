@@ -23,12 +23,8 @@
   App.Model.Todo = App.Model.extend({
     defaults: function() {
       return {
-        text: null,
-        completed: false
+        text: null
       };
-    },
-    isCompleted: function() {
-      return this.get('completed');
     }
   });
 
@@ -36,34 +32,51 @@
     model: App.Model.Todo
   });
 
-  App.View.Textbox = App.View.extend();
+  App.View.Form = App.View.extend({
+    initialize: function() {
+      return this.$input = this.$('#new-todo');
+    },
+    events: {
+      'submit': '_onSubmit'
+    },
+    _onSubmit: function(ev) {
+      ev.preventDefault();
+      this.collection.add({
+        text: this.$input.val()
+      });
+      return this._clearInput();
+    },
+    _clearInput: function() {
+      return this.$input.val('');
+    }
+  });
 
   App.View.Todo = App.View.extend({
     tagName: 'li',
-    html: '<div class="view">\n  <input class="toggle" type="checkbox">\n  <label><%= text %></label>\n  <button class="destroy"></button>\n</div>\n<input class="edit" value="<%= text %>">',
-    initialize: function(options) {
-      return this.$el.text(options.text);
+    template: _.template('<div class="view">\n  <input class="toggle" type="checkbox">\n  <label><%- text %></label>\n  <button class="destroy"></button>\n</div>\n<input class="edit" value="<%- text %>">'),
+    initialize: function() {
+      return this.render();
     },
-    render: function(options) {
+    render: function() {
       var html;
-      console.log(this.html);
-      console.log(options.text);
-      html = _.template(this.html, options);
+      console.log(this.model.get('text'));
+      html = this.template({
+        text: this.model.get('text')
+      });
       return this.$el.append(html);
     }
   });
 
   App.View.Todos = App.View.extend({
-    el: '#new-todo',
-    add: function(text) {
+    initialize: function() {
+      return this.listenTo(this.collection, 'add', this._onAdd);
+    },
+    _onAdd: function(model) {
       var todo;
       todo = new App.View.Todo({
-        text: text
+        model: model
       });
-      todo.render({
-        text: 'test'
-      });
-      return this.$el.append(todo);
+      return this.$el.prepend(todo.el);
     }
   });
 
@@ -71,10 +84,13 @@
     initialize: function() {
       this.todos = new App.Collection.Todos();
       this.todoList = new App.View.Todos({
-        el: '#todo-list'
+        el: '#todo-list',
+        collection: this.todos
       });
-      this.todoList.add('test1');
-      return this.todoList.add('test2');
+      return this.form = new App.View.Form({
+        el: '#new-todo-form',
+        collection: this.todos
+      });
     }
   });
 

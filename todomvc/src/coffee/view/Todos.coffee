@@ -1,11 +1,11 @@
 App.View.Todos = App.View.extend(
-  el: '#new-todo'
+  initialize: ->
+    @listenTo(@collection, 'add', @_onAdd)
 
-  add: (text) ->
+  _onAdd: (model) ->
     todo = new App.View.Todo(
-      text: text
+      model: model
     )
 
-    todo.render({text: 'test'})
-    @$el.append(todo)
+    @$el.prepend(todo.el)
 )

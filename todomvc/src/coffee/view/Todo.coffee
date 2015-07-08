@@ -1,23 +1,21 @@
 App.View.Todo = App.View.extend(
   tagName: 'li'
 
-  html: '''
+  template: _.template '''
   <div class="view">
     <input class="toggle" type="checkbox">
-    <label><%= text %></label>
+    <label><%- text %></label>
     <button class="destroy"></button>
   </div>
-  <input class="edit" value="<%= text %>">
+  <input class="edit" value="<%- text %>">
   '''
 
-  initialize: (options) ->
-    @$el.text(options.text)
+  initialize: ->
+    @render()
 
-  render: (options) ->
-    console.log(@html)
-    console.log(options.text)
-    html = _.template(@html, options)
+  render: ->
+    console.log(@model.get('text'))
+    html = @template({text: @model.get('text')})
 
     @$el.append(html)
-
 )
