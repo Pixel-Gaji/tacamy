@@ -37,7 +37,6 @@ gulp.task "default", ->
   bs.init
     server:
       baseDir: ["app", "bower_components"]
-      directory: false
       index: "index.html"
     notify: false
     host: "localhost"
